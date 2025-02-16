@@ -1,0 +1,162 @@
+@extends('cms.parant')
+
+@section('content')
+
+    <!-- Content Wrapper. Contains page content -->
+        <div class="container-full">
+            <!-- Content Header (Page header) -->
+    
+            <!-- Main content -->
+            <section class="content">
+                <div class="row">
+                    <div class="col-8">
+    
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">Brand List <span class="badge badge-pill badge-danger"> {{ count($brands) }} </span></h3>
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body">
+                                <div class="table-responsive">
+                                    <table id="example1" class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Brand(En)</th>
+                                                <th>Brand(Ar)</th>
+                                                <th>Image</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($brands as $brand)
+                                               <tr>
+                                                <td>{{$brand->brand_name_en}}</td>
+                                                <td>{{$brand->brand_name_ar}}</td>
+                                                <td><img src="{{asset($brand->brand_image)}}" alt="" width="50" height="50"></td>
+                                                <td>
+                                                    
+                                                    <a href="{{route('brands.edit',$brand->id)}}" class="btn btn-info mr-2"><i class="fa fa-edit"></i></a>
+                                                    <a  class="btn btn-danger" onclick="confirmDelete('{{$brand->id}}',this)"><i class="fa fa-trash"></i></a>
+                                                </td>
+                                            </tr> 
+                                            @endforeach
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+    
+                       
+                        <!-- /.box -->
+                    </div>
+
+                    {{-- -------------Add Brand----------- --}}
+
+
+                    <div class="col-4">
+                        <div class="box">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Add Brand</h3>
+                                    <form action="{{route('brands.store')}}" method="post" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="row">
+                                            <div class="col-12">
+                                    
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <h5>Brand Name Engish <span class="text-danger"></span></h5>
+                                                            <div class="controls">
+                                                                <input type="text" name="brand_name_en" class="form-control">
+                                                                <div class="help-block"></div>
+                                                            </div>
+                                                        </div>
+                                                        <span class="text-danger">@error('brand_name_en')
+                                                        {{$message}}
+                                                        @enderror</span>
+                                    
+                                                    </div>
+                                                    <div class="col-12">
+                                    
+                                                        <div class="form-group">
+                                                            <h5>Brand Name Arabic<span class="text-danger"></span></h5>
+                                                            <div class="controls">
+                                                                <input type="text" name="brand_name_ar" class="form-control">
+                                                                <div class="help-block"></div>
+                                                            </div>
+                                                        </div>
+                                                        <span class="text-danger">@error('brand_name_ar')
+                                                        {{$message}}
+                                                        @enderror</span>
+                                    
+                                                    </div>
+                                                    <div class="col-12">
+                                    
+                                                        <div class="form-group">
+                                                            <h5>Brand Image<span class="text-danger"></span></h5>
+                                                            <div class="controls">
+                                                                <input type="file" name="brand_image" class="form-control">
+                                                                <div class="help-block"></div>
+                                                            </div>
+                                                        </div>
+                                                        <span class="text-danger">@error('brand_image')
+                                                        {{$message}}
+                                                        @enderror</span>
+                                    
+                                                    </div>
+                                    
+                                    
+                                                    <div class="text-xs-right">
+                                                        <input type="submit" class="btn btn-rounded btn-primary mb-5" value="Add Brand">
+                                                    </div>
+                                    </form>
+                                </div>
+                            <div class="box-body">
+                                <div class="table-responsive">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </section>
+            <!-- /.content -->
+    
+        </div>
+    <!-- /.content-wrapper -->
+    <script>
+        function confirmDelete(id , element){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+            perFormDelete(id , element);
+            }
+            })
+        }
+        function perFormDelete(id , element){
+            axios.delete('/cms/brands/'+id, {
+            })
+            .then(function (response) {
+            console.log(response);
+            toastr.success(response.data.message);
+            element.closest('tr').remove();
+            })
+            .catch(function (error) {
+            console.log(error);
+            toastr.error(error.response.data.message);
+            });
+        }
+    </script>
+@endsection
